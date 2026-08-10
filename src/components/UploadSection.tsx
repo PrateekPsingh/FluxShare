@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { uploadFile } from "@/api/files";
 
 
+interface UploadSectionProps{
+    onUploadSuccess : ()=> Promise<void>
+}
 
-
-export function UploadSection() {
+export function UploadSection({onUploadSuccess }: UploadSectionProps) {
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -31,6 +33,7 @@ export function UploadSection() {
 
         try {
             await uploadFile(selectedFile);
+            await onUploadSuccess();
 
             alert("File uploaded successfully!");
 

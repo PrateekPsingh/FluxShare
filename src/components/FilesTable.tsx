@@ -1,26 +1,13 @@
-import { useEffect, useState } from "react";
 
-import { listFiles } from "@/api/files";
 import type { FileMetadata } from "@/types/file";
 
-export function FilesTable() {
-  const [files, setFiles] = useState<FileMetadata[]>([]);
-  const [loading, setLoading] = useState(true);
+interface FileTableProps{
+  files : FileMetadata[],
+  loading : boolean
+}
 
-  useEffect(() => {
-    async function fetchFiles() {
-      try {
-        const data = await listFiles();
-        setFiles(data || []);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
+export function FilesTable({files , loading}: FileTableProps) {
 
-    fetchFiles();
-  }, []);
 
   if (loading) {
     return (
