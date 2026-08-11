@@ -20,3 +20,15 @@ export async function uploadFile(file: File) {
 
   return response.data;
 }
+
+export async function deleteFile(id: string) {
+    await api.delete(`/files/${id}`);
+}
+
+export async function downloadFile(id: string) {
+  const response = await api.get(`/files/${id}`, {
+    responseType: "blob",
+  });
+
+  return response.data;
+}

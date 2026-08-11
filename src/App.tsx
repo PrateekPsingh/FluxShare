@@ -34,7 +34,7 @@ function App() {
       <Header />
       <Hero />
       <UploadSection onUploadSuccess={fetchFiles} />
-      <FilesTable files={files} loading={loading}  />
+      <FilesTable files={files} loading={loading} onRefresh={fetchFiles} />
     </main>
   )
 }

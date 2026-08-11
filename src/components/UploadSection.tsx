@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { uploadFile } from "@/api/files";
+import { toast } from "sonner";
 
 
 interface UploadSectionProps{
@@ -27,7 +28,7 @@ export function UploadSection({onUploadSuccess }: UploadSectionProps) {
 
     async function handleUpload() {
         if (!selectedFile) {
-            alert("Please select a file");
+            toast.error("Please select a file");
             return;
         }
 
@@ -35,13 +36,13 @@ export function UploadSection({onUploadSuccess }: UploadSectionProps) {
             await uploadFile(selectedFile);
             await onUploadSuccess();
 
-            alert("File uploaded successfully!");
+            toast.success("File uploaded successfully.");
 
             setSelectedFile(null);
         } catch (error) {
             console.error(error);
 
-            alert("Upload failed");
+            toast.error("Upload failed.");
         }
     }
 
