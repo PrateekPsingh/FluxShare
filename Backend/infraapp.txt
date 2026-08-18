@@ -1,0 +1,34 @@
+                              CLIENTS
+                                 │
+                                 ▼
+                          ┌─────────────┐
+                          │ API GATEWAY │
+                          └──────┬──────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              ▼                  ▼                  ▼
+       ┌────────────┐     ┌────────────┐     ┌────────────┐
+       │    AUTH    │     │    FILE    │     │   SHARING  │
+       │  SERVICE   │     │  SERVICE   │     │   SERVICE  │
+       └─────┬──────┘     └─────┬──────┘     └─────┬──────┘
+             │                  │                  │
+             │                  ├───────┐          │
+             │                  │       │          │
+             ▼                  ▼       ▼          ▼
+         PostgreSQL        PostgreSQL Redis    PostgreSQL
+                                 │
+                                 ▼
+                               S3/MinIO
+                                 │
+                                 ▼
+                               Kafka
+                                 │
+                  ┌──────────────┼──────────────┐
+                  ▼              ▼              ▼
+             Virus Scan     Notification     Audit
+               Worker          Worker         Worker
+                  │              │              │
+                  └──────────────┼──────────────┘
+                                 │
+                                 ▼
+                            Observability
