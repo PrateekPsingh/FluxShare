@@ -1,20 +1,29 @@
 package main
 
 import (
-    
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-    _ "github.com/prateek/file-transfer-service/docs"
+	_ "github.com/prateek/file-transfer-service/docs"
+	"github.com/prateek/file-transfer-service/internal/config"
 	"github.com/prateek/file-transfer-service/internal/database"
 	"github.com/prateek/file-transfer-service/internal/handler"
 	"github.com/prateek/file-transfer-service/internal/repository"
 	"github.com/prateek/file-transfer-service/internal/service"
 	"github.com/prateek/file-transfer-service/internal/storage"
-	"github.com/gin-contrib/cors"
-)
+
+)    
 
 func main() {
+
+	// Loading config items
+
+	cfg, err := config.Load();
+
+	if err != nil{
+		log.Fatal(err)
+	}
 
 	// --------------------------
 	// Connect to PostgreSQL
@@ -50,7 +59,7 @@ func main() {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
     AllowOrigins: []string{
-        "http://localhost:5173",
+        cfg.FrontendHost,
     },
 	AllowMethods: []string{
 		"GET",
@@ -74,9 +83,9 @@ func main() {
 	router.DELETE("/files/:id", fileHandler.DeleteFile)
     router.Static("/docs", "./docs")
     router.Static("/swagger", "./swagger-ui")
-	log.Println("Server started on :8080")
+	log.Printf("Server started on %s", cfg.AppPort)
 
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":" + cfg.AppPort); err != nil {
 		log.Fatal(err)
 	}
 }

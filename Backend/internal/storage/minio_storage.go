@@ -3,9 +3,11 @@ package storage
 import (
 	"context"
 	"io"
+	"log"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+		"github.com/prateek/file-transfer-service/internal/config"
 )
 
 type MinIOStorage struct {
@@ -15,12 +17,19 @@ type MinIOStorage struct {
 
 func NewMinIOStorage() (*MinIOStorage, error) {
 
+	cfg, err := config.Load()
+
+if err != nil {
+	log.Fatal(err)
+}
+
+
 	client, err := minio.New(
-		"localhost:9000",
+		cfg.MinioEndpoint,
 		&minio.Options{
 			Creds: credentials.NewStaticV4(
-				"minioadmin",
-				"minioadmin",
+				cfg.MinioAccessKey,
+				cfg.MinioSecretKey,
 				"",
 			),
 			Secure: false,
@@ -31,7 +40,7 @@ func NewMinIOStorage() (*MinIOStorage, error) {
 
 	exists, err := client.BucketExists(
 		ctx,
-		"uploads",
+		cfg.MinioBucket,
 	)
 
 	if err != nil {
@@ -42,7 +51,7 @@ func NewMinIOStorage() (*MinIOStorage, error) {
 
 		err = client.MakeBucket(
 			ctx,
-			"uploads",
+			cfg.MinioBucket,
 			minio.MakeBucketOptions{},
 		)
 
@@ -53,7 +62,7 @@ func NewMinIOStorage() (*MinIOStorage, error) {
 
 	return &MinIOStorage{
 		client: client,
-		bucket: "uploads",
+		bucket: cfg.MinioBucket,
 	}, nil
 
 }

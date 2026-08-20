@@ -3,8 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/lib/pq"
+
+		"github.com/prateek/file-transfer-service/internal/config"
 )
 
 const createFilesTableQuery = `
@@ -22,7 +25,20 @@ CREATE TABLE IF NOT EXISTS files (
 // NewPostgresDB creates a connection pool to PostgreSQL.
 func NewPostgresDB() (*sql.DB, error) {
 
-	connStr := "host=localhost port=5432 user=postgres password=postgres dbname=filedb sslmode=disable"
+	cfg, err := config.Load();
+
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	connStr := fmt.Sprintf(
+	"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	cfg.DBHost,
+	cfg.DBPort,
+	cfg.DBUser,
+	cfg.DBPassword,
+	cfg.DBName,
+)
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
