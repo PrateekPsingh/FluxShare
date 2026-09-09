@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Upload, FileText, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -9,6 +10,13 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const navigate = useNavigate();
+  const { logout, isAuthenticated } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <aside className="sidebar" role="navigation" aria-label="Main navigation">
       <div className="sidebar-header">
@@ -38,10 +46,22 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <button className="nav-item" style={{ width: '100%' }} aria-label="Log out">
-          <LogOut className="nav-item-icon" size={20} aria-hidden="true" />
-          <span className="nav-item-text">Log out</span>
-        </button>
+        {isAuthenticated ? (
+          <button className="nav-item" style={{ width: '100%' }} onClick={handleLogout} aria-label="Log out">
+            <LogOut className="nav-item-icon" size={20} aria-hidden="true" />
+            <span className="nav-item-text">Log out</span>
+          </button>
+        ) : (
+          <button
+            className="nav-item"
+            style={{ width: '100%' }}
+            onClick={() => navigate('/login')}
+            aria-label="Sign in"
+          >
+            <LogOut className="nav-item-icon" size={20} aria-hidden="true" />
+            <span className="nav-item-text">Sign in</span>
+          </button>
+        )}
       </div>
     </aside>
   );

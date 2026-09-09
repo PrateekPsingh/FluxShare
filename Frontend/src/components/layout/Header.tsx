@@ -1,16 +1,22 @@
-import { Search, Bell, User } from 'lucide-react';
+import { Search, Bell, User, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/files?search=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -33,9 +39,25 @@ export function Header() {
         <button className="icon-button" aria-label="Notifications">
           <Bell size={20} aria-hidden="true" />
         </button>
-        <button className="icon-button" aria-label="User menu">
-          <User size={20} aria-hidden="true" />
-        </button>
+        {isAuthenticated && user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
+            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {user.email}
+            </span>
+            <button className="icon-button" onClick={handleLogout} aria-label="Log out" title="Log out">
+              <LogOut size={20} aria-hidden="true" />
+            </button>
+          </div>
+        ) : (
+          <button
+            className="icon-button"
+            aria-label="User menu"
+            onClick={() => navigate('/login')}
+            title="Sign in"
+          >
+            <User size={20} aria-hidden="true" />
+          </button>
+        )}
       </div>
     </header>
   );

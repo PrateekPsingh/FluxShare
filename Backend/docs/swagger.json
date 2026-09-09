@@ -1,7 +1,309 @@
 {
-    "swagger": "2.0",
+    "openapi": "3.0.3",
     "info": {
-        "contact": {}
+        "title": "File Transfer Service API",
+        "description": "A RESTful API for uploading, downloading, listing, and deleting files.",
+        "version": "1.0.0"
     },
-    "paths": {}
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local Development Server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Files",
+            "description": "File management operations"
+        },
+        {
+            "name": "Auth",
+            "description": "Authentication operations"
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Register a new user",
+                "description": "Creates a new user account with email and password.",
+                "operationId": "registerUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com",
+                                        "description": "The user's email address"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123",
+                                        "description": "The user's password (min 8 characters)"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string",
+                                            "description": "The unique identifier of the user"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "description": "The user's email address"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request body"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login a user",
+                "description": "Authenticates a user with email and password and returns a JWT token.",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["email", "password"],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com",
+                                        "description": "The user's email address"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "SecurePass123",
+                                        "description": "The user's password"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "JWT authentication token"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    }
+                }
+            }
+        },
+        "/files": {
+            "post": {
+                "tags": ["Files"],
+                "summary": "Upload a file",
+                "description": "Upload a file using multipart/form-data.",
+                "operationId": "uploadFile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["file"],
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "File uploaded successfully"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "get": {
+                "tags": ["Files"],
+                "summary": "List uploaded files",
+                "description": "Returns metadata for all uploaded files.",
+                "operationId": "listFiles",
+                "responses": {
+                    "200": {
+                        "description": "List of uploaded files"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/files/{id}": {
+            "get": {
+                "tags": ["Files"],
+                "summary": "Download a file",
+                "description": "Downloads the file associated with the provided ID.",
+                "operationId": "downloadFile",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Unique file identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "File download"
+                    },
+                    "404": {
+                        "description": "File not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Files"],
+                "summary": "Delete a file",
+                "description": "Deletes both the file metadata and the object stored in MinIO.",
+                "operationId": "deleteFile",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Unique file identifier",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "File deleted successfully"
+                    },
+                    "404": {
+                        "description": "File not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "File": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "0c75df55-3c86-4978-a57d-d93f4d5eaef4"
+                    },
+                    "fileName": {
+                        "type": "string",
+                        "example": "resume.pdf"
+                    },
+                    "objectKey": {
+                        "type": "string",
+                        "example": "uploads/0c75df55-3c86-4978-a57d-d93f4d5eaef4-resume.pdf"
+                    },
+                    "size": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 245678
+                    },
+                    "contentType": {
+                        "type": "string",
+                        "example": "application/pdf"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "Uploaded"
+                    },
+                    "uploadedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-07-28T11:20:43Z"
+                    }
+                }
+            },
+            "AuthToken": {
+                "type": "object",
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "description": "JWT authentication token"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "The unique identifier of the user"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "The user's email address"
+                    }
+                }
+            }
+        }
+    }
 }

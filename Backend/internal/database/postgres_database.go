@@ -22,6 +22,16 @@ CREATE TABLE IF NOT EXISTS files (
 );
 `
 
+const createUsersTableQuery = `
+CREATE TABLE IF NOT EXISTS users (
+	id TEXT PRIMARY KEY,
+	email TEXT NOT NULL UNIQUE,
+	password_hash TEXT NOT NULL,
+	created_at TIMESTAMP NOT NULL
+);
+`
+
+
 // NewPostgresDB creates a connection pool to PostgreSQL.
 func NewPostgresDB() (*sql.DB, error) {
 
@@ -58,7 +68,14 @@ func NewPostgresDB() (*sql.DB, error) {
 // CreateTables creates all required database tables.
 func CreateTables(db *sql.DB) error {
 
-	_, err := db.Exec(createFilesTableQuery)
+	_, err := db.Exec(createUsersTableQuery)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("✅ users table is ready")
+
+	_, err = db.Exec(createFilesTableQuery)
 	if err != nil {
 		return err
 	}

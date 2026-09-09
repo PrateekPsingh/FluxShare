@@ -19,6 +19,8 @@ type Config struct {
 	MinioSecretKey string
 	MinioBucket    string
     FrontendHost string
+
+	JWTSecret string
 }
 
 func Load() (*Config, error) {
@@ -42,5 +44,7 @@ func Load() (*Config, error) {
 		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),
 		MinioBucket:    os.Getenv("MINIO_BUCKET"), 
 		FrontendHost:   os.Getenv("FRONTEND_HOST"),
+
+		JWTSecret: os.Getenv("JWT_SECRET"),
 	}, nil
 }

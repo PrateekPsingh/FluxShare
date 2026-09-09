@@ -1,16 +1,15 @@
 import { LogOut } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { useTheme } from '../context/ThemeContext';
-import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 import type { Theme } from '../types';
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const { showToast } = useToast();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    showToast('info', 'Logged out successfully');
-    // In a real app, this would clear session and redirect
+    logout();
   };
 
   return (

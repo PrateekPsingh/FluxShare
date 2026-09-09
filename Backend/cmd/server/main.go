@@ -42,6 +42,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+     
+	// user
+
+	userRepo := repository.NewPostgresUserRepository(db)
+
+authService := service.NewAuthService(userRepo)
 
 	// Create MinIO Storage
 	repo := repository.NewPostgresRepository(db)
@@ -55,6 +61,8 @@ func main() {
 
 	// Create HTTP layer
 	fileHandler := handler.NewFileHandler(fileService)
+
+	authHandler := handler.NewAuthHandler(authService,cfg.JWTSecret,)
 
 	// Create router
 	router := gin.Default()
@@ -82,6 +90,8 @@ func main() {
 	router.GET("/files", fileHandler.ListFiles)
 	router.GET("/files/:id", fileHandler.DownloadFile)
 	router.DELETE("/files/:id", fileHandler.DeleteFile)
+	router.POST("/auth/register", authHandler.Register)
+	router.POST("/auth/login", authHandler.Login)
     router.Static("/docs", "./docs")
     router.Static("/swagger", "./swagger-ui")
 	log.Printf("Server started on %s", cfg.AppPort)
