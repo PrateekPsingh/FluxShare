@@ -1,4 +1,3 @@
-
 package main
 
 import (
@@ -10,19 +9,19 @@ import (
 	"github.com/prateek/file-transfer-service/internal/config"
 	"github.com/prateek/file-transfer-service/internal/database"
 	"github.com/prateek/file-transfer-service/internal/handler"
+	"github.com/prateek/file-transfer-service/internal/middleware"
 	"github.com/prateek/file-transfer-service/internal/repository"
 	"github.com/prateek/file-transfer-service/internal/service"
 	"github.com/prateek/file-transfer-service/internal/storage"
-
-)    
+)
 
 func main() {
 
 	// Loading config items
 
-	cfg, err := config.Load();
+	cfg, err := config.Load()
 
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -42,12 +41,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-     
+
 	// user
 
 	userRepo := repository.NewPostgresUserRepository(db)
 
-authService := service.NewAuthService(userRepo)
+	authService := service.NewAuthService(userRepo)
 
 	// Create MinIO Storage
 	repo := repository.NewPostgresRepository(db)
@@ -62,42 +61,45 @@ authService := service.NewAuthService(userRepo)
 	// Create HTTP layer
 	fileHandler := handler.NewFileHandler(fileService)
 
-	authHandler := handler.NewAuthHandler(authService,cfg.JWTSecret,)
+	authHandler := handler.NewAuthHandler(authService, cfg.JWTSecret)
 
 	// Create router
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-    AllowOrigins: []string{
-        cfg.FrontendHost,
-    },
-	AllowMethods: []string{
-		"GET",
-		"POST",
-		"PUT",
-		"PATCH",
-		"DELETE",
-		"HEAD",
-		"OPTIONS",
-	},AllowHeaders: []string{
-		"Origin",
-		"Content-Type",
-		"Accept",
-		"Authorization",
-	},
-}))
+		AllowOrigins: []string{
+			cfg.FrontendHost,
+		},
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"PATCH",
+			"DELETE",
+			"HEAD",
+			"OPTIONS",
+		}, AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+		},
+	}))
 
-	router.POST("/files", fileHandler.UploadFile)
-	router.GET("/files", fileHandler.ListFiles)
-	router.GET("/files/:id", fileHandler.DownloadFile)
-	router.DELETE("/files/:id", fileHandler.DeleteFile)
+	authMiddleware := middleware.AuthMiddleware(cfg.JWTSecret)
+	protected := router.Group("/")
+	protected.Use(authMiddleware)
+
+	protected.POST("/files", fileHandler.UploadFile)
+	protected.GET("/files", fileHandler.ListFiles)
+	protected.GET("/files/:id", fileHandler.DownloadFile)
+	protected.DELETE("/files/:id", fileHandler.DeleteFile)
 	router.POST("/auth/register", authHandler.Register)
 	router.POST("/auth/login", authHandler.Login)
-    router.Static("/docs", "./docs")
-    router.Static("/swagger", "./swagger-ui")
+	router.Static("/docs", "./docs")
+	router.Static("/swagger", "./swagger-ui")
 	log.Printf("Server started on %s", cfg.AppPort)
 
 	if err := router.Run(":" + cfg.AppPort); err != nil {
 		log.Fatal(err)
 	}
 }
-

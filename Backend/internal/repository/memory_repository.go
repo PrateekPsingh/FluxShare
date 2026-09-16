@@ -30,26 +30,29 @@ func (r *MemoryRepository) Save(ctx context.Context, file *model.File) error {
 	return nil
 }
 
-func (r *MemoryRepository) FindByID(ctx context.Context, id string) (*model.File, error) {
+func (r *MemoryRepository) FindByID(ctx context.Context, id string, userID string) (*model.File, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-
-	file, exists := r.files[id]
-	if !exists {
-		return nil, errors.New("file not found")
-	}
-
-	return &file, nil
-}
-
-func (r *MemoryRepository) List(ctx context.Context) ([]model.File, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	files := make([]model.File, 0, len(r.files))
 
 	for _, file := range r.files {
-		files = append(files, file)
+		if file.ID == id && file.UserID == userID {
+			return &file, nil
+		}
+	}
+
+	return nil, errors.New("file not found")
+}
+
+func (r *MemoryRepository) List(ctx context.Context, userID string) ([]model.File, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var files []model.File
+
+	for _, file := range r.files {
+		if file.UserID == userID {
+			files = append(files, file)
+		}
 	}
 
 	return files, nil

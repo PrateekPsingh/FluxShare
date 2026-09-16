@@ -13,6 +13,28 @@ const api = axios.create({
   },
 });
 
+// Attach auth token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('fluxshare-token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Redirect to /login on 401 (token expired / invalid)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      // Don't reload the page — let AuthProvider handle redirect via React Router
+      // The AuthContext or App routes will redirect to /login
+      return Promise.reject(error);
+    }
+    return Promise.reject(error);
+  },
+);
+
 export class ApiError extends Error {
   code: 'network' | 'server' | 'too-large' | 'not-found' | 'unauthorized';
 

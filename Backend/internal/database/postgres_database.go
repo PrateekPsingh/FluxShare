@@ -13,6 +13,7 @@ import (
 const createFilesTableQuery = `
 CREATE TABLE IF NOT EXISTS files (
 	id TEXT PRIMARY KEY,
+	user_id TEXT NOT NULL REFERENCES users(id),
 	file_name TEXT NOT NULL,
 	object_key TEXT NOT NULL,
 	size BIGINT NOT NULL,
@@ -81,6 +82,9 @@ func CreateTables(db *sql.DB) error {
 	}
 
 	fmt.Println("✅ files table is ready")
+
+	// Migrate old files table that may be missing user_id column
+	_, _ = db.Exec(`ALTER TABLE files ADD COLUMN IF NOT EXISTS user_id TEXT REFERENCES users(id);`)
 
 	return nil
 }

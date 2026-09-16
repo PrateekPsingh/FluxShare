@@ -4,6 +4,7 @@ import "time"
 
 type File struct {
 	ID          string
+	UserID     string
 	FileName    string
 	ObjectKey   string
 	Size        int64

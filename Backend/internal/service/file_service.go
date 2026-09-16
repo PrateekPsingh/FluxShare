@@ -3,7 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-
+	"io"
+	"mime/multipart"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,89 +29,106 @@ func NewFileService(
 	}
 }
 
-func (s *FileService) UploadFile(ctx context.Context, file *model.UploadRequest) error {
-	// Upload workflow will be implemented later
+func (s *FileService) UploadFile(
+	ctx context.Context,
+	userID string,
+	fileHeader *multipart.FileHeader,
+) (*model.File, error) {
 
-	// 1. Generate business values
-	id := uuid.NewString()
-	objectKey := fmt.Sprintf("%s_%s", id, file.FileName)
+	file, err := fileHeader.Open()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open uploaded file: %w", err)
+	}
+	defer file.Close()
 
-	// 2. Store the file bytes
-	if err := s.storage.Upload(
+	fileID := uuid.New().String()
+
+	objectKey := fileID + "-" + fileHeader.Filename
+
+	err = s.storage.Upload(
 		ctx,
 		objectKey,
-		file.Reader,
-		file.Size,
-		file.ContentType,
-	); err != nil {
-		return err
+		file,
+		fileHeader.Size,
+		fileHeader.Header.Get("Content-Type"),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload file to storage: %w", err)
 	}
 
-	// 3. Create the domain model
-	files := &model.File{
-		ID:          id,
-		FileName:    file.FileName,
+	fileModel := &model.File{
+		ID:          fileID,
+		UserID:      userID,
+		FileName:    fileHeader.Filename,
 		ObjectKey:   objectKey,
-		Size:        file.Size,
-		ContentType: file.ContentType,
+		Size:        fileHeader.Size,
+		ContentType: fileHeader.Header.Get("Content-Type"),
 		Status:      "uploaded",
 		UploadedAt:  time.Now(),
 	}
 
-	// 4. Save the metadata
-	if err := s.repo.Save(ctx, files); err != nil {
-		return err
+	err = s.repo.Save(ctx, fileModel)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save file metadata: %w", err)
 	}
 
-	return nil
+	return fileModel, nil
 }
 
 func (s *FileService) DownloadFile(
 	ctx context.Context,
 	id string,
-) (*model.DownloadResponse, error) {
+	userID string,
+) (*model.File, error) {
 
-	// Step 1: Find file metadata
-	file, err := s.repo.FindByID(ctx, id)
+	file, err := s.repo.FindByID(ctx, id, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	// Step 2: Download file content
-	reader, err := s.storage.Download(ctx, file.ObjectKey)
-	if err != nil {
-		return nil, err
-	}
-
-	// Step 3: Build response
-	return &model.DownloadResponse{
-		FileName:    file.FileName,
-		ContentType: file.ContentType,
-		Reader:      reader,
-	}, nil
+	return file, nil
 }
 
-func (s *FileService) ListFiles(ctx context.Context) ([]model.File, error) {
-	// List workflow will be implemented later
-	return s.repo.List(ctx)
+func (s *FileService) DownloadStream(
+	ctx context.Context,
+	objectKey string,
+) (io.ReadCloser, error) {
+
+	return s.storage.Download(ctx, objectKey)
+}
+
+func (s *FileService) ListFiles(
+	ctx context.Context,
+	userID string,
+) ([]model.File, error) {
+
+	files, err := s.repo.List(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
 
 func (s *FileService) DeleteFile(
 	ctx context.Context,
 	id string,
+	userID string,
 ) error {
 
-	file, err := s.repo.FindByID(ctx, id)
+	file, err := s.repo.FindByID(ctx, id, userID)
 	if err != nil {
 		return err
 	}
 
-	if err := s.storage.Delete(ctx, file.ObjectKey); err != nil {
-		return err
+	err = s.storage.Delete(ctx, file.ObjectKey)
+	if err != nil {
+		return fmt.Errorf("failed to delete file from storage: %w", err)
 	}
 
-	if err := s.repo.Delete(ctx, id); err != nil {
-		return err
+	err = s.repo.Delete(ctx, id, userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete file metadata: %w", err)
 	}
 
 	return nil

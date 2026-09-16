@@ -12,6 +12,15 @@ const authApi = axios.create({
   },
 });
 
+// Attach auth token to every auth request (if available — login/register don't need it, but this keeps parity)
+authApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('fluxshare-token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export interface RegisterResponse {
   id: string;
   email: string;
