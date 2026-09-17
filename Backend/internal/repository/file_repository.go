@@ -14,4 +14,6 @@ type FileRepository interface {
 	List(ctx context.Context, userID string,) ([]model.File, error)
 
 	Delete(ctx context.Context, id string, userID string,) error
+
+	FindByIDForShare(ctx context.Context, id string) (*model.File, error)
 }

@@ -32,6 +32,17 @@ CREATE TABLE IF NOT EXISTS users (
 );
 `
 
+const shareTableQuery = `
+	CREATE TABLE IF NOT EXISTS shares (
+		id TEXT PRIMARY KEY,
+		file_id TEXT NOT NULL REFERENCES files(id) ON DELETE CASCADE,
+		token TEXT NOT NULL UNIQUE,
+		created_at TIMESTAMP NOT NULL,
+		expires_at TIMESTAMP NULL,
+		revoked_at TIMESTAMP NULL
+	);
+`
+
 
 // NewPostgresDB creates a connection pool to PostgreSQL.
 func NewPostgresDB() (*sql.DB, error) {
@@ -85,6 +96,11 @@ func CreateTables(db *sql.DB) error {
 
 	// Migrate old files table that may be missing user_id column
 	_, _ = db.Exec(`ALTER TABLE files ADD COLUMN IF NOT EXISTS user_id TEXT REFERENCES users(id);`)
+
+	_, err = db.Exec(shareTableQuery)
+if err != nil {
+	return fmt.Errorf("failed to create shares table: %w", err)
+}
 
 	return nil
 }

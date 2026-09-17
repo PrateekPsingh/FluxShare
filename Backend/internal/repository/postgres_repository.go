@@ -205,3 +205,53 @@ func (r *PostgresRepository) Delete(
 
 	return nil
 }
+
+func (r *PostgresRepository) FindByIDForShare(
+    ctx context.Context,
+    id string,
+) (*model.File, error) {
+
+    query := `
+        SELECT
+            id,
+            user_id,
+            file_name,
+            object_key,
+            size,
+            content_type,
+            status,
+            uploaded_at
+        FROM files
+        WHERE id = $1
+    `
+
+    var file model.File
+
+    err := r.db.QueryRowContext(
+        ctx,
+        query,
+        id,
+    ).Scan(
+        &file.ID,
+        &file.UserID,
+        &file.FileName,
+        &file.ObjectKey,
+        &file.Size,
+        &file.ContentType,
+        &file.Status,
+        &file.UploadedAt,
+    )
+
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return nil, errors.New("file not found")
+        }
+
+        return nil, fmt.Errorf(
+            "failed to find file for share: %w",
+            err,
+        )
+    }
+
+    return &file, nil
+}

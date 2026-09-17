@@ -45,7 +45,7 @@ func main() {
 	// user
 
 	userRepo := repository.NewPostgresUserRepository(db)
-
+	shareRepo := repository.NewPostgresShareRepository(db)
 	authService := service.NewAuthService(userRepo)
 
 	// Create MinIO Storage
@@ -57,11 +57,17 @@ func main() {
 
 	// Create business layer
 	fileService := service.NewFileService(repo, storage)
+	shareService := service.NewShareService(repo, shareRepo)
 
 	// Create HTTP layer
 	fileHandler := handler.NewFileHandler(fileService)
 
 	authHandler := handler.NewAuthHandler(authService, cfg.JWTSecret)
+
+	shareHandler := handler.NewShareHandler(
+		shareService,
+		fileService,
+	)
 
 	// Create router
 	router := gin.Default()
@@ -93,8 +99,23 @@ func main() {
 	protected.GET("/files", fileHandler.ListFiles)
 	protected.GET("/files/:id", fileHandler.DownloadFile)
 	protected.DELETE("/files/:id", fileHandler.DeleteFile)
+	protected.POST(
+		"/files/:id/share",
+		shareHandler.CreateShare,
+	)
+
+	protected.DELETE(
+		"/shares/:id",
+		shareHandler.RevokeShare,
+	)
+
+	protected.GET(
+	"/shares",
+	shareHandler.ListShares,
+)
 	router.POST("/auth/register", authHandler.Register)
 	router.POST("/auth/login", authHandler.Login)
+	router.GET("/share/:token", shareHandler.GetSharedFile)
 	router.Static("/docs", "./docs")
 	router.Static("/swagger", "./swagger-ui")
 	log.Printf("Server started on %s", cfg.AppPort)
