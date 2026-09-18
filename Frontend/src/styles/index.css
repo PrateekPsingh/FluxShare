@@ -39,6 +39,16 @@
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
 
+  /* Semantic colors for light theme */
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-inverse: #ffffff;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --border-color: #e5e7eb;
+
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   --font-size-xs: 0.75rem;
@@ -100,6 +110,16 @@
   --color-gray-700: #f3f4f6;
   --color-gray-800: #f9fafb;
   --color-gray-900: #ffffff;
+
+  /* Semantic text colors for dark mode - ensure readability */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #111827;
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --border-color: #374151;
 }
 
 /* ========================================
@@ -295,6 +315,21 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* Dark mode nav item adjustments */
+[data-theme="dark"] .nav-item {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .nav-item:hover {
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-100);
+}
+
+[data-theme="dark"] .nav-item.active {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--color-primary-400);
+}
+
 @media (max-width: 768px) {
   .nav-item-text {
     display: none;
@@ -441,6 +476,33 @@ a:hover {
 .icon-button:hover {
   background-color: var(--color-gray-100);
   color: var(--color-gray-900);
+}
+
+.icon-button:active {
+  transform: scale(0.95);
+}
+
+/* Dark mode icon button adjustments */
+[data-theme="dark"] .icon-button {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .icon-button:hover {
+  background-color: var(--color-gray-700);
+  color: var(--color-gray-100);
+}
+
+.header-user-email {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .header-user-email {
+  color: var(--color-gray-400);
 }
 
 /* ========================================
@@ -1187,6 +1249,24 @@ a:hover {
   background-color: var(--color-white);
   color: var(--color-gray-900);
   box-shadow: var(--shadow-sm);
+}
+
+/* Dark mode filter tab adjustments */
+[data-theme="dark"] .filter-tabs {
+  background-color: var(--color-gray-800);
+}
+
+[data-theme="dark"] .filter-tab {
+  color: var(--color-gray-400);
+}
+
+[data-theme="dark"] .filter-tab:hover {
+  color: var(--color-gray-200);
+}
+
+[data-theme="dark"] .filter-tab.active {
+  background-color: var(--color-primary-600);
+  color: var(--color-white);
 }
 
 /* ========================================

@@ -1,12 +1,14 @@
-import { Search, Bell, User, LogOut } from 'lucide-react';
+import { Search, User, LogOut, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout, isAuthenticated } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +20,14 @@ export function Header() {
   const handleLogout = () => {
     logout();
   };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const effectiveTheme = theme === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : theme;
 
   return (
     <header className="header">
@@ -36,12 +46,16 @@ export function Header() {
       </div>
 
       <div className="header-actions">
-        <button className="icon-button" aria-label="Notifications">
-          <Bell size={20} aria-hidden="true" />
+        <button className="icon-button" onClick={toggleTheme} title={effectiveTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} aria-label="Toggle theme">
+          {effectiveTheme === 'dark' ? (
+            <Sun size={20} aria-hidden="true" />
+          ) : (
+            <Moon size={20} aria-hidden="true" />
+          )}
         </button>
         {isAuthenticated && user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-2)' }}>
-            <span style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-gray-600)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span className="header-user-email">
               {user.email}
             </span>
             <button className="icon-button" onClick={handleLogout} aria-label="Log out" title="Log out">

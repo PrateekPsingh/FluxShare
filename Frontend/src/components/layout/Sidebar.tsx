@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Upload, FileText, Settings, LogOut, Share2 } from 'lucide-react';
+import { LayoutDashboard, Upload, FileText, LogOut, Share2, Zap } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
@@ -7,7 +7,6 @@ const navItems = [
   { to: '/upload', label: 'Upload', icon: Upload },
   { to: '/files', label: 'Files', icon: FileText },
   { to: '/shared-links', label: 'Shared Links', icon: Share2 },
-  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function Sidebar() {
@@ -23,7 +22,7 @@ export function Sidebar() {
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon">
-            <Upload size={18} aria-hidden="true" />
+            <Zap size={18} aria-hidden="true" />
           </div>
           <span className="sidebar-logo-text">FluxShare</span>
         </div>

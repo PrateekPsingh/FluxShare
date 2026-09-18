@@ -4,7 +4,6 @@ import { Dashboard } from './pages/Dashboard';
 import { UploadPage } from './pages/UploadPage';
 import { FilesPage } from './pages/FilesPage';
 import { FileDetailsPage } from './pages/FileDetailsPage';
-import { SettingsPage } from './pages/SettingsPage';
 import { Login } from './pages/Login';
 import { SharedLinksPage } from './pages/SharedLinksPage';
 import { PublicSharePage } from './pages/PublicSharePage';
@@ -75,14 +74,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <FileDetailsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <SettingsPage />
           </ProtectedRoute>
         }
       />
