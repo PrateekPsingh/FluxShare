@@ -1373,6 +1373,197 @@ a:hover {
 }
 
 /* ========================================
+   SHARE DIALOG
+   ======================================== */
+
+.share-link-container {
+  padding: var(--spacing-3);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  word-break: break-all;
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-600);
+}
+
+/* ========================================
+   SHARED LINKS PAGE
+   ======================================== */
+
+.shared-links-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-8);
+}
+
+.shared-link-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-5);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  transition: box-shadow var(--transition-fast);
+}
+
+.shared-link-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.shared-link-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.shared-link-file-name {
+  font-weight: 500;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-1);
+}
+
+.shared-link-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
+}
+
+.shared-link-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.shared-link-url {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+/* Revoked/Expired badge styles */
+.badge-active {
+  background-color: var(--color-success-50);
+  color: var(--color-success-600);
+}
+
+.badge-expired {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-500);
+}
+
+.badge-revoked {
+  background-color: var(--color-error-50);
+  color: var(--color-error-600);
+}
+
+/* ========================================
+   PUBLIC SHARE PAGE
+   ======================================== */
+
+.public-share-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--header-height));
+  padding: var(--spacing-8);
+}
+
+.public-share-card {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-8);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.public-share-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-6);
+  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700));
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.public-share-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--color-gray-900);
+  margin-bottom: var(--spacing-2);
+}
+
+.public-share-description {
+  font-size: var(--font-size-base);
+  color: var(--color-gray-500);
+  margin-bottom: var(--spacing-6);
+}
+
+.public-share-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-lg);
+}
+
+.public-share-file-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+
+.public-share-file-label {
+  color: var(--color-gray-500);
+}
+
+.public-share-file-value {
+  font-weight: 500;
+  color: var(--color-gray-900);
+}
+
+.public-share-error {
+  text-align: center;
+  padding: var(--spacing-8);
+}
+
+.public-share-error-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--spacing-4);
+  color: var(--color-error-600);
+}
+
+.public-share-error-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-error-600);
+  margin-bottom: var(--spacing-2);
+}
+
+.public-share-error-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-600);
+  margin-bottom: var(--spacing-6);
+}
+
+/* ========================================
    UTILITIES
    ======================================== */
 

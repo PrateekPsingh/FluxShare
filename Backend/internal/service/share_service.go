@@ -46,7 +46,7 @@ func (s *ShareService) CreateShare(
 	ctx context.Context,
 	userID string,
 	fileID string,
-	expiresInHours int,
+	expiresInHours float64,
 ) (*model.Share, error) {
 
 	_, err := s.fileRepo.FindByID(
@@ -68,7 +68,7 @@ func (s *ShareService) CreateShare(
 
 	if expiresInHours > 0 {
 		expiry := time.Now().Add(
-			time.Duration(expiresInHours) * time.Hour,
+			time.Duration(int(expiresInHours) * 60) * time.Minute,
 		)
 
 		expiresAt = &expiry

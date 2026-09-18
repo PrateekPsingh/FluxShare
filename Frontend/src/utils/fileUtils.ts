@@ -10,7 +10,8 @@ export const formatFileSize = (bytes: number): string => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-export const getFileType = (filename: string): string => {
+export const getFileType = (filename: string | undefined): string => {
+  if (!filename) return '';
   const ext = filename.split('.').pop()?.toLowerCase() || '';
   return ext;
 };
@@ -47,9 +48,13 @@ export const getFileIcon = (type: string): string => {
   return iconMap[type] || 'file';
 };
 
-export const formatDate = (date: Date): string => {
+export const formatDate = (date: Date | string | null | undefined): string => {
+  if (!date) return '—';
+  const d = typeof date === 'string' ? new Date(date) : new Date(date.getTime ? date.getTime() : date);
+  if (isNaN(d.getTime())) return '—';
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
+  const target = d;
+  const diffMs = now.getTime() - target.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -61,15 +66,16 @@ export const formatDate = (date: Date): string => {
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays} days ago`;
 
-  return date.toLocaleDateString('en-US', {
+  return d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
-    year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
   });
 };
 
-export const formatFullDate = (date: Date): string => {
-  return date.toLocaleDateString('en-US', {
+export const formatFullDate = (date: Date | string): string => {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  return d.toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
@@ -109,4 +115,9 @@ export const getMimeType = (type: string): string => {
   };
 
   return mimeMap[type] || 'application/octet-stream';
+};
+
+export const getFileIconType = (filename: string): string => {
+  const ext = filename.split('.').pop()?.toLowerCase() || '';
+  return getFileIcon(ext);
 };

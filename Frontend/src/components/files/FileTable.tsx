@@ -1,4 +1,4 @@
-import { Download, Trash2, Eye } from 'lucide-react';
+import { Download, Trash2, Eye, Share2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { FileData } from '../../types';
@@ -7,6 +7,9 @@ import { StatusBadge } from '../ui/StatusBadge';
 import { FileIcon } from '../ui/FileIcon';
 import { Button } from '../ui/Button';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
+import { ShareDialog } from '../ui/ShareDialog';
+import { createShare } from '../../api/shares';
+import { useToast } from '../../context/ToastContext';
 
 interface FileTableProps {
   files: FileData[];
@@ -16,11 +19,45 @@ interface FileTableProps {
 
 export function FileTable({ files, onDownload, onDelete }: FileTableProps) {
   const [deleteTarget, setDeleteTarget] = useState<FileData | null>(null);
+  const [shareTarget, setShareTarget] = useState<FileData | null>(null);
+  const [creatingShare, setCreatingShare] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   const handleDelete = () => {
     if (deleteTarget) {
       onDelete(deleteTarget);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleShareClick = (file: FileData) => {
+    setShareTarget(file);
+    setShareUrl(null);
+  };
+
+  const handleCreateShare = async (expiresInHours: number) => {
+    if (!shareTarget) return;
+    setCreatingShare(true);
+    try {
+      const response = await createShare(shareTarget.id, expiresInHours);
+      const fullUrl = new URL(response.share_url, window.location.origin).toString();
+      setShareUrl(fullUrl);
+      showToast('success', 'Share link created');
+    } catch {
+      showToast('error', 'Failed to create share link');
+    } finally {
+      setCreatingShare(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      showToast('success', 'Share link copied');
+    } catch {
+      showToast('error', 'Failed to copy link');
     }
   };
 
@@ -73,6 +110,14 @@ export function FileTable({ files, onDownload, onDelete }: FileTableProps) {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => handleShareClick(file)}
+                      aria-label={`Share ${file.name}`}
+                    >
+                      <Share2 size={16} aria-hidden="true" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setDeleteTarget(file)}
                       aria-label={`Delete ${file.name}`}
                     >
@@ -110,6 +155,10 @@ export function FileTable({ files, onDownload, onDelete }: FileTableProps) {
                 <Download size={16} aria-hidden="true" />
                 Download
               </Button>
+              <Button variant="ghost" size="sm" onClick={() => handleShareClick(file)}>
+                <Share2 size={16} aria-hidden="true" />
+                Share
+              </Button>
               <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(file)}>
                 <Trash2 size={16} aria-hidden="true" />
                 Delete
@@ -127,6 +176,19 @@ export function FileTable({ files, onDownload, onDelete }: FileTableProps) {
         variant="danger"
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      <ShareDialog
+        file={shareTarget}
+        isOpen={!!shareTarget}
+        onClose={() => {
+          setShareTarget(null);
+          setShareUrl(null);
+        }}
+        onCreateShare={handleCreateShare}
+        creatingShare={creatingShare}
+        shareUrl={shareUrl}
+        onCopyLink={handleCopyLink}
       />
     </>
   );

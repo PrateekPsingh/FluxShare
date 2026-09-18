@@ -57,3 +57,59 @@ export type FileFilter = 'all' | 'uploaded' | 'failed' | 'processing';
 
 // Theme types
 export type Theme = 'light' | 'dark' | 'system';
+
+// ---------------------------------------------------------------------------
+// Share types
+// ---------------------------------------------------------------------------
+
+export type ShareStatus = 'active' | 'expired' | 'revoked';
+
+export interface Share {
+  id: string;
+  file_id: string;
+  file_name: string;
+  token: string;
+  share_url: string;
+  created_at: string;
+  expires_at: string;
+  revoked_at: string | null;
+  status?: ShareStatus;
+}
+
+export interface CreateShareRequest {
+  expires_in_hours: number;
+}
+
+export interface CreateShareResponse {
+  share_id: string;
+  share_url: string;
+  expires_at: string;
+}
+
+export interface ListSharesResponse {
+  shares: Share[];
+}
+
+export interface SharedFileInfo {
+  id: string;
+  fileId: string;
+  fileName: string;
+  fileSize?: number;
+  fileType?: string;
+  token: string;
+  shareUrl: string;
+  createdAt: string;
+  expiresAt: string;
+  revokedAt: string | null;
+}
+
+export interface GetSharedFileResponse {
+  file: {
+    id: string;
+    name: string;
+    size?: number;
+    contentType?: string;
+    expiresAt?: string;
+  };
+  error?: string;
+}

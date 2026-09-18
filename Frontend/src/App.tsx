@@ -6,6 +6,8 @@ import { FilesPage } from './pages/FilesPage';
 import { FileDetailsPage } from './pages/FileDetailsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { Login } from './pages/Login';
+import { SharedLinksPage } from './pages/SharedLinksPage';
+import { PublicSharePage } from './pages/PublicSharePage';
 import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -83,6 +85,18 @@ function AppRoutes() {
             <SettingsPage />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/shared-links"
+        element={
+          <ProtectedRoute>
+            <SharedLinksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/share/:token"
+        element={<PublicSharePage />}
       />
       <Route
         path="*"

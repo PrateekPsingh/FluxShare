@@ -1,11 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Upload, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Upload, FileText, Settings, LogOut, Share2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/upload', label: 'Upload', icon: Upload },
   { to: '/files', label: 'Files', icon: FileText },
+  { to: '/shared-links', label: 'Shared Links', icon: Share2 },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 

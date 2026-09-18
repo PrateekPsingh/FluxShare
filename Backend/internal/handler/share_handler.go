@@ -24,7 +24,7 @@ func NewShareHandler(
 }
 
 type createShareRequest struct {
-	ExpiresInHours int `json:"expires_in_hours"`
+	ExpiresInHours float64 `json:"expires_in_hours"`
 }
 
 func (h *ShareHandler) CreateShare(c *gin.Context) {
