@@ -76,7 +76,7 @@ export async function createShare(
 export async function listShares(): Promise<Share[]> {
   try {
     const response = await shareApi.get<ListSharesResponse>('/shares');
-    return response.data.shares.map(transformShare);
+    return (response.data?.shares || []).map(transformShare);
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (!error.response) {

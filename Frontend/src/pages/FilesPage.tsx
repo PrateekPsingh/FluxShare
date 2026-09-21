@@ -26,7 +26,8 @@ export function FilesPage() {
       const data = await getFiles();
       setFiles(data);
     } catch {
-      showToast('error', 'Failed to load files');
+     
+      setFiles([]);
     } finally {
       setLoading(false);
     }

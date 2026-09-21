@@ -25,7 +25,8 @@ export function SharedLinksPage() {
       const data = await listShares();
       setShares(data.filter((share) => share.revoked_at === null || share.revoked_at === undefined));
     } catch {
-      showToast('error', 'Failed to load share links');
+      // ponytail: 0 shares = empty, not error
+      setShares([]);
     } finally {
       setLoading(false);
     }

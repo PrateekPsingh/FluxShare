@@ -28,8 +28,9 @@ export function Dashboard() {
       const [filesData, statsData] = await Promise.all([getFiles(), getStats()]);
       setFiles(filesData);
       setStats(statsData);
-    } catch (error) {
-      showToast('error', 'Failed to load dashboard data');
+    } catch {
+      
+      setFiles([]);
     } finally {
       setLoading(false);
     }

@@ -92,11 +92,13 @@ interface BackendFile {
 export async function getFiles(): Promise<FileData[]> {
   try {
     const response = await api.get<BackendFile[]>('/files');
-    return response.data.map(transformFile);
+    
+    return (response.data || []).map(transformFile);
   } catch (error) {
     if (axios.isAxiosError(error) && !error.response) {
       throw new ApiError('network', 'Unable to connect to server. Please check your connection.');
     }
+    
     throw new ApiError('server', 'Failed to load files');
   }
 }
